@@ -1,0 +1,43 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "variables": {
+        "lab": {
+            "cs": {
+                "name": "[concat('cs-',uniqueString(concat(resourceGroup().id, subscription().subscriptionId)))]"
+            },
+            "speech": {
+                "name": "[concat('speech-',uniqueString(concat(resourceGroup().id, subscription().subscriptionId)))]"
+            }
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2016-02-01-preview",
+            "name": "[variables('lab').cs.name]",
+            "location": "westus",
+            "type": "Microsoft.CognitiveServices/accounts",
+            "kind": "CognitiveServices",
+            "sku": {
+                "name": "S0"
+            },
+            "properties": {
+                "apiProperties": {
+                    "statisticsEnabled": false
+                }
+            }
+        },
+		{
+            "type": "Microsoft.CognitiveServices/accounts",
+            "sku": {
+                "name": "S0"
+            },
+            "kind": "SpeechServices",
+            "name": "[variables('lab').speech.name]",
+            "apiVersion": "2017-04-18",
+            "location": "westus",
+            "properties": {}
+        }
+    ]
+}

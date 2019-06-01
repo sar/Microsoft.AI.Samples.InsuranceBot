@@ -1,0 +1,139 @@
+{
+  "luis_schema_version": "2.1.0",
+  "versionId": "0.2",
+  "name": "mini-litware",
+  "desc": "Finds articles and wiki entries for the given topic that the user wants to learn more about.",
+  "culture": "en-us",
+  "intents": [
+    {
+      "name": "INeedInsurance"
+    },
+    {
+      "name": "None"
+    }
+  ],
+  "entities": [
+    {
+      "name": "InsuranceType"
+    }
+  ],
+  "composites": [],
+  "closedLists": [],
+  "bing_entities": [],
+  "model_features": [],
+  "regex_features": [],
+  "utterances": [
+    {
+      "text": "can i get a discount?",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "can you help me get a new policy",
+      "intent": "INeedInsurance",
+      "entities": []
+    },
+    {
+      "text": "can you help me get car insurance",
+      "intent": "INeedInsurance",
+      "entities": [
+        {
+          "entity": "InsuranceType",
+          "startPos": 20,
+          "endPos": 22
+        }
+      ]
+    },
+    {
+      "text": "i need auto insurance",
+      "intent": "INeedInsurance",
+      "entities": [
+        {
+          "entity": "InsuranceType",
+          "startPos": 7,
+          "endPos": 10
+        }
+      ]
+    },
+    {
+      "text": "i need car insurance",
+      "intent": "INeedInsurance",
+      "entities": [
+        {
+          "entity": "InsuranceType",
+          "startPos": 7,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "i need insurance for my new car",
+      "intent": "INeedInsurance",
+      "entities": [
+        {
+          "entity": "InsuranceType",
+          "startPos": 28,
+          "endPos": 30
+        }
+      ]
+    },
+    {
+      "text": "i need to insure my car",
+      "intent": "INeedInsurance",
+      "entities": [
+        {
+          "entity": "InsuranceType",
+          "startPos": 20,
+          "endPos": 22
+        }
+      ]
+    },
+    {
+      "text": "i want a new car insurance policy",
+      "intent": "INeedInsurance",
+      "entities": [
+        {
+          "entity": "InsuranceType",
+          "startPos": 13,
+          "endPos": 15
+        }
+      ]
+    },
+    {
+      "text": "i want a new insurance policy",
+      "intent": "INeedInsurance",
+      "entities": []
+    },
+    {
+      "text": "i want to insure my new car",
+      "intent": "INeedInsurance",
+      "entities": [
+        {
+          "entity": "InsuranceType",
+          "startPos": 24,
+          "endPos": 26
+        }
+      ]
+    },
+    {
+      "text": "what kind of discounts can i get?",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "where are you based?",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "where are you from?",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "where do you live?",
+      "intent": "None",
+      "entities": []
+    }
+  ]
+}
