@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -104,7 +104,24 @@ namespace InsuranceBot
                     {
                         case DialogTurnStatus.Empty:
                             // Replace with LUIS handler here
-                            await dc.Context.SendActivityAsync("Hello world!");
+                            //await dc.Context.SendActivityAsync("Hello world!");
+                            
+                            // Perform a call to LUIS to retrieve results for the current activity message.
+                            var luisResults = await _services.LuisServices.ElementAt(0).Value.RecognizeAsync(dc.Context, cancellationToken).ConfigureAwait(false);
+                            var topScoringIntent = luisResults?.GetTopScoringIntent();
+                            var topIntent = topScoringIntent.Value.intent;
+
+                            // Your code goes here
+                            switch (topIntent)
+                            {
+                                case INeedInsuranceIntent:
+                                    await INeedInsuranceHandler(dc, luisResults);
+                                    break;
+
+                                default:
+                                    await dc.Context.SendActivityAsync("Sorry, I didn't understand that.");
+                                    break;
+                            }
 
                             break;
 
@@ -125,6 +142,17 @@ namespace InsuranceBot
             else if (activity.Type == ActivityTypes.ConversationUpdate)
             {
                 // Add code for welcome message here
+                if (activity.MembersAdded.Any())
+                {
+                    // Iterate over all new members added to the conversation.
+                    foreach (var member in activity.MembersAdded)
+                    {
+                        if (string.Equals(member.Id, activity.Recipient.Id, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            await dc.Context.SendActivityAsync("Hi! How can I help you today?");
+                        }
+                    }
+                }
             }
 
             await _conversationState.SaveChangesAsync(turnContext);
@@ -134,7 +162,16 @@ namespace InsuranceBot
         private async Task INeedInsuranceHandler(DialogContext dialogContext, RecognizerResult result)
         {
             var type = (string)result.Entities["InsuranceType"]?[0];
-            await dialogContext.BeginDialogAsync(PromptStep.GatherInsuranceType);
+            
+            if (string.IsNullOrEmpty(type))
+            {
+                await dialogContext.BeginDialogAsync(PromptStep.GatherInsuranceType);
+            }
+            else
+            {
+                await FinishInsuranceTypeStep(dialogContext, type);
+            }
+
         }
 
         private async Task<DialogTurnResult> InitializeStateStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)

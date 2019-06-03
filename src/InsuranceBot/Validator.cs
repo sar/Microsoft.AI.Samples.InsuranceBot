@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -13,13 +13,25 @@ namespace InsuranceBot
 {
     public static class Validator
     {
-        public static async Task<bool> CarMakeValidator(PromptValidatorContext<string> promptContext, CancellationToken cancellationToken)
+        public static async Task<bool> CarMakeValidator(PromptValidatorContext<string> promptContext,
+            CancellationToken cancellationToken)
         {
-            promptContext.Recognized.Value = promptContext.Recognized.Value?.Trim() ?? string.Empty;
-            return true;
+            var value = promptContext.Recognized.Value?.Trim() ?? string.Empty;
+            if (value.Equals("foobar", StringComparison.OrdinalIgnoreCase))
+            {
+                await promptContext.Context.SendActivityAsync("Hmmm I don't recognize that make.")
+                    .ConfigureAwait(false);
+                return false;
+            }
+            else
+            {
+                promptContext.Recognized.Value = value;
+                return true;
+            }
         }
 
-        public static async Task<bool> CarTypeValidator(PromptValidatorContext<FoundChoice> promptContext, CancellationToken cancellationToken)
+        public static async Task<bool> CarTypeValidator(PromptValidatorContext<FoundChoice> promptContext,
+            CancellationToken cancellationToken)
         {
             var value = promptContext.Recognized.Value;
             if (value.Score > 0.5)
@@ -29,12 +41,15 @@ namespace InsuranceBot
             }
             else
             {
-                await promptContext.Context.SendActivityAsync($"Car Type it's invalid, please make sure that you select a valid option.").ConfigureAwait(false);
+                await promptContext.Context
+                    .SendActivityAsync($"Car Type it's invalid, please make sure that you select a valid option.")
+                    .ConfigureAwait(false);
                 return false;
             }
         }
 
-        public static async Task<bool> CarModelValidator(PromptValidatorContext<string> promptContext, CancellationToken cancellationToken)
+        public static async Task<bool> CarModelValidator(PromptValidatorContext<string> promptContext,
+            CancellationToken cancellationToken)
         {
             var value = promptContext.Recognized.Value?.Trim() ?? string.Empty;
             if (value.Length >= 2)
@@ -44,12 +59,14 @@ namespace InsuranceBot
             }
             else
             {
-                await promptContext.Context.SendActivityAsync($"Your car model should be at least 2 characters long.").ConfigureAwait(false);
+                await promptContext.Context.SendActivityAsync($"Your car model should be at least 2 characters long.")
+                    .ConfigureAwait(false);
                 return false;
             }
         }
 
-        public static async Task<bool> CarYearValidator(PromptValidatorContext<int> promptContext, CancellationToken cancellationToken)
+        public static async Task<bool> CarYearValidator(PromptValidatorContext<int> promptContext,
+            CancellationToken cancellationToken)
         {
             var value = promptContext.Recognized.Value;
             if (value >= 1900 && value <= 2018)
@@ -59,7 +76,8 @@ namespace InsuranceBot
             }
             else
             {
-                await promptContext.Context.SendActivityAsync($"Your car year should be between 1900 and 2018.").ConfigureAwait(false);
+                await promptContext.Context.SendActivityAsync($"Your car year should be between 1900 and 2018.")
+                    .ConfigureAwait(false);
                 return false;
             }
         }
@@ -70,7 +88,8 @@ namespace InsuranceBot
             return true;
         }
 
-        public static async Task<bool> UserFeedbackValidator(PromptValidatorContext<string> promptContext, CancellationToken cancellationToken)
+        public static async Task<bool> UserFeedbackValidator(PromptValidatorContext<string> promptContext,
+            CancellationToken cancellationToken)
         {
             var value = promptContext.Recognized.Value?.Trim() ?? string.Empty;
             if (value.Length > 2)
