@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -57,7 +57,7 @@ namespace InsuranceBot
                 PromptForCarMakeStepAsync,
                 PromptForCarModelStepAsync,
                 PromptForCarYearStepAsync,
-                // PromptForCarPictureStepAsync,
+                PromptForCarPictureStepAsync,
                 PromptForUserFeedbackStepAsync,
                 FinalStep,
             };
@@ -68,11 +68,11 @@ namespace InsuranceBot
             Dialogs.Add(new TextPrompt(PromptStep.CarModelPrompt, Validator.CarModelValidator));
             Dialogs.Add(new NumberPrompt<int>(PromptStep.CarYearPrompt, Validator.CarYearValidator));
             // Add picture prompt here
-            //Dialogs.Add(new AttachmentPrompt(PromptStep.CarPicturePrompt, async (promptValidatorContext, cancellationToken) =>
-            //{
-            //    var ineedInsuranceState = await _ineedInsuranceStateAccessor.GetAsync(promptValidatorContext.Context);
-            //    return await Validator.CarPictureValidator(promptValidatorContext, ineedInsuranceState.CarType);
-            //}));
+            Dialogs.Add(new AttachmentPrompt(PromptStep.CarPicturePrompt, async (promptValidatorContext, cancellationToken) =>
+            {
+                var ineedInsuranceState = await _ineedInsuranceStateAccessor.GetAsync(promptValidatorContext.Context);
+                return await Validator.CarPictureValidator(promptValidatorContext, ineedInsuranceState.CarType);
+            }));
             Dialogs.Add(new TextPrompt(PromptStep.UserFeedbackPrompt, Validator.UserFeedbackValidator));
         }
 
@@ -206,9 +206,17 @@ namespace InsuranceBot
             var heroCard = new HeroCard(buttons: actions);
 
             // Add the cards definition with images
+            var cards = actions
+                .Select(x => new HeroCard
+                {
+                    Images = new List<CardImage> { new CardImage(x.Image) },
+                    Buttons = new List<CardAction> { x },
+                }.ToAttachment())
+                .ToList();
+
 
             // Replace the following line to show carousel with images
-            var activity = (Activity)MessageFactory.Carousel(new[] { heroCard.ToAttachment() }, "What kind of insurance do you need?");
+            var activity = (Activity)MessageFactory.Carousel(cards, "What kind of insurance do you need?");
             return await stepContext.PromptAsync(PromptStep.InsuranceTypePrompt, new PromptOptions { Prompt = activity }, cancellationToken);
         }
 

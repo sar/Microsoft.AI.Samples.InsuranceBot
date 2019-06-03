@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -82,9 +82,30 @@ namespace InsuranceBot
             }
         }
 
-        public static async Task<bool> CarPictureValidator(PromptValidatorContext<IList<Attachment>> promptContext, string carType)
+        public static async Task<bool> CarPictureValidator(PromptValidatorContext<IList<Attachment>> promptContext,
+            string carType)
         {
             // Add validation code here
+
+            var computerVisionService = new ComputerVisionService();
+            var detectResult = await computerVisionService.Detect(promptContext.Recognized.Value[0].ContentUrl);
+            if (!detectResult.IsCar)
+            {
+                await promptContext.Context.SendActivityAsync(
+                    $"That doesn't look like a car. It looks more like {detectResult.Description}.");
+                return false;
+            }
+
+            // Add Custom Vision validation here
+            var customVisionService = new CustomVisionService();
+            var predictedCarType = await customVisionService.Analyze(promptContext.Recognized.Value[0].ContentUrl);
+            var isRightCarType = string.Equals(predictedCarType, carType, StringComparison.OrdinalIgnoreCase);
+            if (!isRightCarType)
+            {
+                await promptContext.Context.SendActivityAsync($"That doesn’t look like a {carType}.");
+                return false;
+            }
+
             return true;
         }
 
