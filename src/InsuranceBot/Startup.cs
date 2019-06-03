@@ -119,8 +119,11 @@ namespace InsuranceBot
                 };
 
                 // Add translation middleware here
+                var languangeProperty = conversationState.CreateProperty<string>("Language");
+                options.Middleware.Add(new TranslationMiddleware(languangeProperty));
 
                 // Add Hero Cards translation middleware here
+                options.Middleware.Add(new HeroCardsTranslationMiddleware(languangeProperty));
 
             });
 

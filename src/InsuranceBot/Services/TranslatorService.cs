@@ -18,12 +18,47 @@ namespace InsuranceBot.Services
 
         public static async Task<string> Detect(string input)
         {
-            throw new NotImplementedException();
+            var uri = string.Format(TranslatorEndpoint, "detect");
+            var body = new object[] { new { Text = input } };
+            var requestBody = JsonConvert.SerializeObject(body);
+
+            var message = new HttpRequestMessage(HttpMethod.Post, uri);
+            message.Headers.Add("Ocp-Apim-Subscription-Key", "<your-key>");
+            message.Headers.Add("Ocp-Apim-Subscription-Region", "westus");
+            message.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+            message.Headers.Add("X-ClientTraceId", Guid.NewGuid().ToString());
+
+            var response = await Client.SendAsync(message);
+            response.EnsureSuccessStatusCode();
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            var result = JsonConvert.DeserializeObject<List<TranslatorDetectResponse>>(responseBody);
+            var languageDetected = result.FirstOrDefault()?.Language;
+
+            return languageDetected;
         }
 
         public static async Task<string> Translate(string input, string from, string to)
         {
-            throw new NotImplementedException();
+            var uri = $"{string.Format(TranslatorEndpoint, "translate")}&from={from}&to={to}";
+            var body = new object[] { new { Text = input } };
+            var requestBody = JsonConvert.SerializeObject(body);
+
+            var message = new HttpRequestMessage(HttpMethod.Post, uri);
+            message.Headers.Add("Ocp-Apim-Subscription-Key", "<your-key>");
+            message.Headers.Add("Ocp-Apim-Subscription-Region", "westus");
+            message.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+            message.Headers.Add("X-ClientTraceId", Guid.NewGuid().ToString());
+
+            var response = await Client.SendAsync(message);
+            response.EnsureSuccessStatusCode();
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            var result = JsonConvert.DeserializeObject<List<Dictionary<string, List<Dictionary<string, string>>>>>(responseBody);
+            var translations = result[0]["translations"];
+            var translation = translations[0]["text"];
+
+            return translation;
         }
     }
 }
