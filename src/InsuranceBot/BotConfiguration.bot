@@ -1,0 +1,25 @@
+﻿{
+  "name": "CoreBot",
+  "services": [
+    {
+      "type": "endpoint",
+      "name": "development",
+      "endpoint": "http://localhost:3978/api/messages",
+      "appId": "",
+      "appPassword": "",
+      "id": "1"
+    },
+    {
+      "id": "2",
+      "type": "luis",
+      "name": "BasicBotLuisApplication",
+      "version": "",
+      "appId": "<your_app_id>",
+      "authoringKey": "<your_authoring_key>",
+      "subscriptionKey": "<your_subscription_key>",
+      "region": "westus"
+    }
+  ],
+  "padlock": "",
+  "version": "2.0"
+}
